@@ -85,3 +85,13 @@ def test_small_map_works():
 def test_too_small_map_raises():
     with pytest.raises(ValueError):
         make_map(size=30)
+
+
+@pytest.mark.parametrize("seed", range(20))
+def test_start_goal_have_free_space_around(seed):
+    from uahybrid.inflate import distance_map
+    size = 200
+    m = make_map(size=size, seed=seed)
+    dist = distance_map(m.occ)
+    assert dist[m.start[1], m.start[0]] >= size * 0.06
+    assert dist[m.goal[1], m.goal[0]] >= size * 0.06

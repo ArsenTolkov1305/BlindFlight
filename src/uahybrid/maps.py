@@ -1,7 +1,10 @@
 from dataclasses import dataclass
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import ndimage
+
+from uahybrid.inflate import distance_map
 
 
 @dataclass
@@ -21,7 +24,7 @@ def _pick(rng, mask, n):
     return [(int(xs[i]), int(ys[i])) for i in idx]
 
 
-def _try_make(rng, size, n_obstacles, n_zones):
+def _try_make(rng, size, n_obstacles, n_zones, end_clearance):
     occ = np.zeros((size, size), dtype=bool)
     gps = np.ones((size, size), dtype=bool)
 
@@ -39,7 +42,7 @@ def _try_make(rng, size, n_obstacles, n_zones):
         gps[y:y + h, x:x + w] = False
 
     strip = max(1, int(size * 0.15))
-    free = ~occ & gps
+    free = ~occ & gps & (distance_map(occ) >= end_clearance)
     left = free.copy()
     left[:, strip:] = False
     right = free.copy()
@@ -52,7 +55,6 @@ def _try_make(rng, size, n_obstacles, n_zones):
     labels, _ = ndimage.label(~occ)
     if labels[start[1], start[0]] != labels[goal[1], goal[0]]:
         return None
-
     denied = ~occ & ~gps
     if denied.sum() < 3:
         return None
@@ -66,12 +68,14 @@ def _try_make(rng, size, n_obstacles, n_zones):
 
 
 def make_map(size: int = 200, n_obstacles: int = 15, seed: int = 0,
-             n_zones: int = 2, max_attempts: int = 50) -> Map:
+             n_zones: int = 2, max_attempts: int = 50, end_clearance: float = None) -> Map:
     if size < 50:
         raise ValueError("size must be >= 50")
+    if end_clearance is None:
+        end_clearance = size * 0.06
     rng = np.random.default_rng(seed)
     for _ in range(max_attempts):
-        m = _try_make(rng, size, n_obstacles, n_zones)
+        m = _try_make(rng, size, n_obstacles, n_zones, end_clearance)
         if m is not None:
             return m
     raise RuntimeError("Could not generate a valid map; try fewer obstacles")
