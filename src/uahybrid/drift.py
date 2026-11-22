@@ -8,7 +8,7 @@ class DriftParams:
     sigma_beacon: float = 1.0
     drift_rate: float = 0.04
     walk_sigma: float = 0.15
-    beacon_radius: float = 4.0
+    beacon_radius: float = 8.0
 
 
 def r_err(s: float, p: DriftParams, base_sigma: float, k: float = 3.0) -> float:
