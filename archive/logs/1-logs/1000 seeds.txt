@@ -1,0 +1,31 @@
+(ua-hybrid) PS C:\Users\user\Documents\projects\BlindFlight> python experiments/exp_compare.py --first-seed 1000 --out results/compare_final.csv
+UA-A* backend: Python
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:17<00:00,  5.62it/s]
+Карт, де A* заходить у зону без GPS: 69 з 100; польотів на план: 20
+
+дрейф 0.02 (довжина - лише на 68 картах, де спланували всі)
+            planned  crash  mission_ok  length_ratio
+method                                              
+A* r=0         1.00   0.69        0.31          1.00
+static r=4     0.99   0.04        0.94          1.02
+static r=6     0.99   0.02        0.96          1.06
+static r=8     0.99   0.06        0.93          1.14
+UA-A*          1.00   0.04        0.96          1.03
+
+дрейф 0.04 (довжина - лише на 68 картах, де спланували всі)
+            planned  crash  mission_ok  length_ratio
+method                                              
+A* r=0         1.00   0.69        0.31          1.00
+static r=4     0.99   0.05        0.93          1.02
+static r=6     0.99   0.02        0.96          1.06
+static r=8     0.99   0.05        0.93          1.14
+UA-A*          1.00   0.05        0.95          1.05
+
+дрейф 0.08 (довжина - лише на 68 картах, де спланували всі)
+            planned  crash  mission_ok  length_ratio
+method                                              
+A* r=0         1.00   0.73        0.27          1.00
+static r=4     0.99   0.13        0.86          1.02
+static r=6     0.99   0.04        0.94          1.06
+static r=8     0.99   0.06        0.92          1.14
+UA-A*          1.00   0.07        0.93          1.08

@@ -14,6 +14,7 @@ from uahybrid.planners.astar import _NEIGHBORS, _octile
 class UAParams:
     r_max: float = 8.0
     lam: float = 0.5
+    bucket_r: float = 1.0
     bucket: float = 4.0
     k: float = 3.0
     pass_radius: float = 1.5
@@ -21,7 +22,6 @@ class UAParams:
 
 
 class _Ctx:
-
     def __init__(self, m, p: DriftParams, ua: UAParams, dist=None):
         self.p, self.ua, self.gps = p, ua, m.gps
         self.dist = distance_map(m.occ) if dist is None else dist
@@ -46,14 +46,19 @@ def _transition(c: _Ctx, nx, ny, s, b, ds):
     return r_pre, s_pre, b
 
 
-def ua_astar(m, p: DriftParams = DriftParams(), ua: UAParams = UAParams(), dist=None):
+def ua_astar(m, p: DriftParams = DriftParams(), ua: UAParams = UAParams(), dist=None, stats=None):
     c = _Ctx(m, p, ua, dist)
     occ, dist = m.occ, c.dist
     height, width = occ.shape
     start, goal = tuple(m.start), tuple(m.goal)
-    bucket = ua.bucket
+    sigma = (p.sigma_gps, p.sigma_beacon)
 
-    key0 = (start[0], start[1], 0, 0)
+    def level(s, b):
+        if ua.bucket_r > 0:
+            return int(r_err(s, p, sigma[b], ua.k) / ua.bucket_r)
+        return int(s / ua.bucket)
+
+    key0 = (start[0], start[1], level(0.0, 0), 0)
     g_best = {key0: 0.0}
     parent = {key0: None}
     closed = set()
@@ -61,7 +66,7 @@ def ua_astar(m, p: DriftParams = DriftParams(), ua: UAParams = UAParams(), dist=
 
     while heap:
         _, g, x, y, s, b = heapq.heappop(heap)
-        key = (x, y, int(s / bucket), b)
+        key = (x, y, level(s, b), b)
         if key in closed or g > g_best[key] + 1e-9:
             continue
         if (x, y) == goal:
@@ -71,6 +76,8 @@ def ua_astar(m, p: DriftParams = DriftParams(), ua: UAParams = UAParams(), dist=
                 key = parent[key]
             return path[::-1]
         closed.add(key)
+        if stats is not None:
+            stats["expanded"] = len(closed)
 
         for dx, dy, ds in _NEIGHBORS:
             nx, ny = x + dx, y + dy
@@ -81,7 +88,7 @@ def ua_astar(m, p: DriftParams = DriftParams(), ua: UAParams = UAParams(), dist=
             r_pre, s_new, b_new = _transition(c, nx, ny, s, b, ds)
             if r_pre > ua.r_max or dist[ny, nx] <= r_pre + ua.margin:
                 continue
-            nkey = (nx, ny, int(s_new / bucket), b_new)
+            nkey = (nx, ny, level(s_new, b_new), b_new)
             if nkey in closed:
                 continue
             ng = g + ds * (1 + ua.lam * r_pre / ua.r_max)

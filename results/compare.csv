@@ -48,7 +48,7 @@ seed,drift_rate,method,touches_zone,planned,length,crash_rate
 3,0.02,static r=4,False,True,176.72287142747462,0.0
 3,0.02,static r=6,False,True,180.13708498984772,0.0
 3,0.02,static r=8,False,True,202.0538238691625,0.0
-3,0.02,UA-A*,False,True,175.30865786510168,0.0
+3,0.02,UA-A*,False,True,175.30865786510165,0.0
 3,0.04,A* r=0,False,True,165.36753236814718,1.0
 3,0.04,static r=4,False,True,176.72287142747462,0.0
 3,0.04,static r=6,False,True,180.13708498984772,0.0
@@ -558,7 +558,7 @@ seed,drift_rate,method,touches_zone,planned,length,crash_rate
 37,0.02,static r=4,True,True,218.69343417595195,0.0
 37,0.02,static r=6,True,True,223.96551211459405,0.0
 37,0.02,static r=8,True,True,229.23759005323618,0.0
-37,0.02,UA-A*,True,True,215.17871555019076,0.0
+37,0.02,UA-A*,True,True,215.1787155501908,0.0
 37,0.04,A* r=0,True,True,212.8355697996829,1.0
 37,0.04,static r=4,True,True,218.69343417595195,0.05
 37,0.04,static r=6,True,True,223.96551211459405,0.0
@@ -1328,7 +1328,7 @@ seed,drift_rate,method,touches_zone,planned,length,crash_rate
 88,0.04,static r=4,True,True,182.52691193458116,0.25
 88,0.04,static r=6,True,True,185.35533905932732,0.1
 88,0.04,static r=8,True,True,190.4264068711928,0.15
-88,0.04,UA-A*,True,True,180.87005768508885,0.25
+88,0.04,UA-A*,True,True,180.87005768508882,0.25
 88,0.08,A* r=0,True,True,179.2132034355964,0.65
 88,0.08,static r=4,True,True,182.52691193458116,0.25
 88,0.08,static r=6,True,True,185.35533905932732,0.1
@@ -1383,7 +1383,7 @@ seed,drift_rate,method,touches_zone,planned,length,crash_rate
 92,0.02,static r=4,True,True,195.4974746830586,0.0
 92,0.02,static r=6,True,True,198.8111831820434,0.0
 92,0.02,static r=8,True,True,203.78174593052057,0.0
-92,0.02,UA-A*,True,True,197.982756057297,0.0
+92,0.02,UA-A*,True,True,197.98275605729697,0.0
 92,0.04,A* r=0,True,True,194.6690475583124,0.85
 92,0.04,static r=4,True,True,195.4974746830586,0.0
 92,0.04,static r=6,True,True,198.8111831820434,0.0
