@@ -14,10 +14,11 @@ class FlightResult:
     max_s: float
     err: list = field(default_factory=list)
     bound: list = field(default_factory=list)
+    collision_in_zone: bool = False
 
 
 def simulate_flight(m, path, params: DriftParams, rng, stop_on_collision: bool = True,
-                    k: float = 3.0) -> FlightResult:
+                    k: float = 3.0, shield=None) -> FlightResult:
     occ, gps = m.occ, m.gps
     h, w = occ.shape
     n = len(path)
@@ -43,6 +44,13 @@ def simulate_flight(m, path, params: DriftParams, rng, stop_on_collision: bool =
         tx, ty = x + ex, y + ey
         cx, cy = int(math.floor(tx + 0.5)), int(math.floor(ty + 0.5))
 
+        if shield is not None and 0 <= cx < w and 0 <= cy < h and not occ[cy, cx]:
+            px, py = shield.push(cx, cy)
+            if px or py:
+                ex, ey = ex + px, ey + py
+                tx, ty = x + ex, y + ey
+                cx, cy = int(math.floor(tx + 0.5)), int(math.floor(ty + 0.5))
+
         e = math.hypot(ex, ey)
         res.err.append(e)
         res.bound.append(r_err(s, params, base, k))
@@ -52,6 +60,7 @@ def simulate_flight(m, path, params: DriftParams, rng, stop_on_collision: bool =
         if not (0 <= cx < w and 0 <= cy < h) or occ[cy, cx]:
             if res.collision_step < 0:
                 res.collided, res.collision_step = True, i
+                res.collision_in_zone = not gps[min(max(cy, 0), h - 1), min(max(cx, 0), w - 1)]
             if stop_on_collision:
                 break
         cx, cy = min(max(cx, 0), w - 1), min(max(cy, 0), h - 1)
