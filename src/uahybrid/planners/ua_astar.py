@@ -19,6 +19,7 @@ class UAParams:
     k: float = 3.0
     pass_radius: float = 1.5
     margin: float = 0.71
+    dynamic: bool = True
 
 
 class _Ctx:
@@ -52,6 +53,7 @@ def ua_astar(m, p: DriftParams = DriftParams(), ua: UAParams = UAParams(), dist=
     height, width = occ.shape
     start, goal = tuple(m.start), tuple(m.goal)
     sigma = (p.sigma_gps, p.sigma_beacon)
+    r_const = r_err(0.0, p, p.sigma_gps, ua.k) + ua.margin
 
     def level(s, b):
         if ua.bucket_r > 0:
@@ -86,7 +88,10 @@ def ua_astar(m, p: DriftParams = DriftParams(), ua: UAParams = UAParams(), dist=
             if dx and dy and (occ[y, nx] or occ[ny, x]):
                 continue
             r_pre, s_new, b_new = _transition(c, nx, ny, s, b, ds)
-            if r_pre > ua.r_max or dist[ny, nx] <= r_pre + ua.margin:
+            if ua.dynamic:
+                if r_pre > ua.r_max or dist[ny, nx] <= r_pre + ua.margin:
+                    continue
+            elif dist[ny, nx] <= r_const:
                 continue
             nkey = (nx, ny, level(s_new, b_new), b_new)
             if nkey in closed:

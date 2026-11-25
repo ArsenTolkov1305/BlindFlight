@@ -30,6 +30,6 @@ def ua_astar_rs(m, p: DriftParams = DriftParams(), ua: UAParams = UAParams(), di
 
 
 def ua_astar_fast(m, p: DriftParams = DriftParams(), ua: UAParams = UAParams(), dist=None):
-    if HAVE_RUST:
+    if HAVE_RUST and ua.dynamic:
         return ua_astar_rs(m, p, ua, dist)
     return ua_astar(m, p, ua, dist)

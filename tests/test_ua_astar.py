@@ -47,3 +47,8 @@ def test_path_respects_own_uncertainty_model(seed):
     for (x, y), r in list(zip(path, trace))[1:]:
         assert r <= ua.r_max + 1e-9
         assert dist[y, x] > r + ua.margin
+
+
+def test_dynamic_off_has_no_r_max_cap():
+    assert ua_astar(_open_map()) is None
+    assert ua_astar(_open_map(), ua=UAParams(dynamic=False)) is not None
